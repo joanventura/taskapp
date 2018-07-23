@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Lista de Tareas
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    {% if app.user.tipoUsuario == 'NORMAL' %}
+        <h3><b>Mis Tickets</b></h3>
+        <div class="pull-right">
+            <a href="{{ path('nuevo_ticket') }}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <b>Nuevo Ticket</b></a>
+        </div>
+    {% else %}
+        <h3><b>Mis Asignaciones</b></h3>
+    {% endif %}
+    <table id="user-class">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                {% if app.user.tipoUsuario == 'NORMAL' %}
+                    <th>Asignado A</th>
+                {% else %}
+                    <th>Usuario</th>
+                {% endif %}
+                <th>Estado</th>
+                <th valign="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if tickets|length > 0 %}
+            {% for ticket in tickets %}
+                <tr>
+                    <td id="id">{{ ticket.id }}</td>
+                    <td>{{ ticket.fecha|date('m/d/Y H:m:s ') }}</td>
+                    {% if app.user.tipoUsuario == 'NORMAL' %}
+                        <td>{{ ticket.usuarioAsignado.nombre }}</td>
+                    {% else %}
+                        <td>{{ ticket.usuario.nombre}}</td>
+                    {% endif %}
+                    <td id="estado">{{ ticket.estado }}</td>
+                    {% if app.user.tipoUsuario == 'NORMAL' %}
+                        <td align="center"><a class="btn btn-primary" href="{{ path('informacion_ticket',{id: ticket.id }) }}"><span class="glyphicon glyphicon-eye-open"></span> <b>Ver</b></a></td>
+                    {% else %}
+                        <td align="center">
+                            <a class="btn btn-primary" href="{{ path('informacion_ticket',{id: taticketsk.id }) }}"><span class="glyphicon glyphicon-eye-open"></span> <b>Ver</b></a>
+                            {% if ticket.estado=='Pendiente' %}
+                                <button type="button" class="btn btn-primary" id="btnIniciar"><span class="glyphicon glyphicon-plus"></span> <b>Iniciar</b></button>
+                                <button type="button" class="btn btn-warning" id="btnTerminar" hidden="true" ><span class="glyphicon glyphicon-remove"></span> <b>Terminar</b></button>
+                            {% else%}
+                                {% if ticket.estado=='En_Proceso' %}
+                                    <button type="button" class="btn btn-warning" id="btnTerminar"><span class="glyphicon glyphicon-remove"></span> <b>Terminar</b></button>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+
+        {% else %}
+            <tr>
+                <td>No Hay Tickets</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
+
+{% block javascript %}
+{{ parent() }}
+<script>
+    $(document).ready(function(e){
+        $(document).on('click','#btnIniciar',function(e){
+            var r=$(e.target).closest('tr');
+            var id=r.find('#id').text();
+            $.ajax({
+                url:Routing.generate('actualizar_task', {id:id}),
+                data:JSON.stringify({estado:'En_Proceso'}),
+                type:'PUT',
+                success:function(e) {
+                    r.find('#btnIniciar').hide();
+                    r.find('#btnTerminar').show();
+                    r.find('#estado').text('En_Proceso');
+                }
+            });
+        });
+        $(document).on('click','#btnTerminar',function(e){
+            var r=$(e.target).closest('tr');
+            var id=r.find('#id').text();
+            $.ajax({
+                url:Routing.generate('actualizar_task', {id:id}),
+                data:JSON.stringify({estado:'Terminado'}),
+                type:'PUT',
+                success:function(e) {
+                    r.find('#btnTerminar').hide();
+                    r.find('#estado').text('Terminado');
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

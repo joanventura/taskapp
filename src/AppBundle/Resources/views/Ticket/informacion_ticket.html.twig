@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Tareas
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h4><b>Asignación # {{ ticket.id }}</b></h4>
+                <label class="label label-primary">{{ ticket.estado }}</label>
+            </div>
+            <div class="col-md-4">
+                <div class="">
+                    <h5><b>{{ ticket.fecha|date('d/m/Y') }}</b></h5>
+                </div>
+            </div>
+        </div>
+
+    <br>
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Solicitdo por: <b>{{ ticket.usuario.nombre }}</b></h4>
+                <p>Descripción: {{ ticket.descripcion }}</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalNotas" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><b>Notas</b></h4>
+                </div>
+                <div class="modal-body">
+                    <input hidden value="{{ ticket.id }}" id="idTicket">
+                    <div class="form-group">
+                        <label>Nota:</label>
+                        <textarea class="form-control" id="txtNota" rows="5" autofocus></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-log-out"></span> <b>Volver</b></button>
+                    <button type="button" class="btn btn-success" id="btnGuardar"><span class="glyphicon glyphicon-floppy-disk"></span> <b>Guardar</b></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+{{ parent() }}
+
+<script>
+    $(document).ready(function(e){
+        $('#btnGuardar').click(function(e){
+            if($('#txtNota').val()==''){
+                alert('Debe Ingresar una Nota para continuar.');
+            }else{
+                var obj={
+                    comentario:$('#txtNota').val()
+                }
+                $.ajax({
+                    url:Routing.generate('guardar_noras',{ id:$('#idTicket').val() }),
+                    type:'POST',
+                    data:JSON.stringify(obj),
+                    success: function(response){
+                        if(response==1){
+                            window.location.href=window.location;
+                        }else{
+                            alert('No se pudo Guardar');
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

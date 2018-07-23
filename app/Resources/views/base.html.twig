@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Taskapp - {% block titulo %} {% endblock %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{  asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{  asset('assets/css/starter-template.css') }}" rel="stylesheet">
+
+     <link href="{{  asset('assets/css/table.css') }}" rel="stylesheet">
+
+    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">TaskApp</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li {% block menu_usuario %}{% endblock %}><a href="{{ path('lista_usuarios') }}">Users</a></li>
+            <li {% block menu_tarea %}{% endblock %}><a href="{{ path('lista_tickets') }}">Tasks</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <div class="starter-template">
+        {% block body %}{% endblock %}
+      </div>
+
+    </div><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+    <script>
+   $(document).ready(function(e){
+   $('#btnGuardarTicket').click(function(e){
+        if($('#usuarioAsignado').val()==0){
+            alert('Debe seleccionar un Usuario para continuar.');
+            return;
+        }else{
+            var usuario_asignado_id=$('#usuarioAsignado').val();
+            var descripcion=$('#appbundle_ticket_descripcion').val();
+            $.ajax({
+                url:  Routing.generate('guardar_ticket'),
+                type:'POST',
+                data: JSON.stringify({usuario_asignado_id:usuario_asignado_id,descripcion:descripcion}),
+                success: function(response){
+                    window.location.href = "/";
+                },
+                error:function(err){
+                    console.log(err);
+                }
+            });
+        }
+   });
+});
+    </script>
+
+  </body>
+</html>

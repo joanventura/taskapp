@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Nueva Tarea
+{% endblock %}
+
+{% block body %}
+    <h2 class="pull-left">Nuevo Ticket</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                    {{ form_start(form) }}
+                        <div class="form-group">
+                            <label>Asignar A:</label>
+                            <select class="form-control" name="usuarios" id="usuarioAsignado" required="true">
+                                <option value="0">Seleccione un Usuario Técnico</option>
+                                {% for usuario in usuarios %}
+                                    <option value="{{ usuario.id }}">{{ usuario.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div><!--.form-group-->
+                        {{ form_widget(form) }}
+                        <div class="form-group">
+                            <a href="{{ path('lista_tickets') }}" class="btn btn-danger" id="btnCancelarTicket"><span class="glyphicon glyphicon-remove"></span> <b>Cancelar</b></a>
+                            <button type="button" class="btn btn-success" id="btnGuardarTicket"><span class="glyphicon glyphicon-floppy-disk"></span> <b>Guardar</b></button>
+                        </div><!--.pull-right -->
+                    {{ form_end(form) }}
+            </div><!--.col-md-12-->
+        </div><!--.row-->
+    </div><!--.container-->
+
+{% endblock %}
